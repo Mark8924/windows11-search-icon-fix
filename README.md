@@ -4,9 +4,9 @@
 
 ## Download and run
 
-### [Download SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.1-preview.1/SearchIconStateFix.exe)
+### [Download SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.2-preview.1/SearchIconStateFix.exe)
 
-[Release details and checksums](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.1-preview.1) · Windows 11 ARM64 / x64 · No commands or administrator rights required.
+[Release details and checksums](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.2-preview.1) · Windows 11 ARM64 / x64 · No commands or administrator rights required.
 
 1. Run the EXE. It installs a current-user copy and opens the settings window.
 2. Check **Start automatically when I sign in** if desired. Startup runs invisibly in the background, with no taskbar or notification-area icon.
@@ -56,9 +56,9 @@ MIT license. Bug reports should include Windows build, CPU architecture, Search 
 
 ## 下载和使用
 
-### [直接下载 SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.1-preview.1/SearchIconStateFix.exe)
+### [直接下载 SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.2-preview.1/SearchIconStateFix.exe)
 
-[版本说明与校验值](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.1-preview.1) · 支持 Windows 11 ARM64 / x64 · 无需输入命令或管理员权限。
+[版本说明与校验值](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.2-preview.1) · 支持 Windows 11 ARM64 / x64 · 无需输入命令或管理员权限。
 
 1. 双击 EXE，会安装到当前用户目录并打开设置界面。
 2. 按需勾选“登录 Windows 时自动启动”；自启时纯后台运行，不显示窗口、任务栏或托盘图标。

@@ -147,7 +147,7 @@ internal static class SearchIconStateFix
             callback = OnWinEvent;
             foregroundHook = Native.SetWinEventHook(3, 3, IntPtr.Zero, callback, 0, 0, 2);
             visibilityHook = Native.SetWinEventHook(0x8002, 0x8003, IntPtr.Zero, callback, 0, 0, 2);
-            Log("started pid=" + Process.GetCurrentProcess().Id + " version=0.2.1-preview.1; event-driven, no periodic polling");
+            Log("started pid=" + Process.GetCurrentProcess().Id + " version=0.2.2-preview.1; event-driven, no periodic polling");
             if (!background) ShowUI();
             Schedule("startup", 1500);
         }
