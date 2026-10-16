@@ -306,7 +306,8 @@ internal static class SearchIconStateFix
         readonly FixContext owner; readonly CheckBox startup; bool refreshing;
         internal bool AllowClose;
         internal SettingsForm(FixContext owner) {
-            this.owner = owner; Text = Caption; Icon = Icon.ExtractAssociatedIcon(InstalledExe); StartPosition = FormStartPosition.CenterScreen;
+            this.owner = owner; Text = Caption; using (var iconStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AppIcon.ico"))
+            using (var appIcon = new Icon(iconStream)) Icon = (Icon)appIcon.Clone(); StartPosition = FormStartPosition.CenterScreen;
             Font = new Font("Segoe UI", 10); AutoScaleMode = AutoScaleMode.None;
             float dpi; using (var graphics = CreateGraphics()) dpi = graphics.DpiX / 96f;
             Func<int, int> px = delegate(int value) { return (int)Math.Round(value * dpi); };

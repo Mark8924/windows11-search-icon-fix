@@ -25,6 +25,7 @@ foreach ($arch in @('arm64','x64')) {
     }
 }
 $arguments += '/win32icon:' + (Join-Path $sourceRoot 'AppIcon.ico')
+$arguments += '/resource:' + (Join-Path $sourceRoot 'AppIcon.ico') + ',AppIcon.ico'
 $arguments += Join-Path $sourceRoot 'SearchIconStateFix.cs'
 & $csc @arguments
 if ($LASTEXITCODE -ne 0) { throw "C# compiler exited with $LASTEXITCODE" }
