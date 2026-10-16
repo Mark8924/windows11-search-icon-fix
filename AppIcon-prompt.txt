@@ -8,5 +8,4 @@ Design prompt:
 Final edit prompt:
 精确修改这枚已选定的图标，保持浅灰白圆角底板、蓝色放大镜、深灰小扳手的设计、颜色和扁平风格。修复放大镜右下方被挖掉的缺口：放大镜圆环必须完整连续，画成完整的蓝色圆环，不能缺一块，不能被扳手或白色描边切断。将小扳手稍微向右下移动，在放大镜与扳手之间留清晰的空隙，两者不重叠、不遮挡；必要时将扳手再缩小一点，确保它仍在底板内。保留放大镜手柄的原始方向。另去掉圆角底板以外的白色背景，使底板外透明；圆角底板本身要保留。底板占正方形画布约九成，只留下适量透明留白。不要其他改动。
 
-Size adjustment prompt:
-只调整图标在画布上的尺寸，不重新设计：将现有浅灰白圆角底板连同蓝色放大镜和右下角独立小扳手整体等比例放大，去掉外围过多的透明留白，使圆角底板占正方形画布宽高的约94%，四边仅保留约3%的透明边距。所有形状、颜色、相互位置和间距、完整圆环、扳手大小比例及扁平风格必须保持一致。不要裁掉底板或改变任何图形，不添加其他内容。
+ICO sizing is performed by BuildIcon.py: crop transparent outer padding and normalize the nearly-square approved artwork to square frames. No image generation is used for sizing.

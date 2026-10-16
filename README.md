@@ -77,3 +77,5 @@ MIT license. Bug reports should include Windows build, CPU architecture, Search 
 这是未签名的开源程序。可先检查源码与校验值。编译方式见上方英文部分；`Uninstall.ps1` 用于退出并删除自启项，保留日志与缓存，注销后可删除缓存目录。MIT 许可证。
 
 Icon generated using the built-in imagegen tool; source PNG and multi-size ICO are included. / 图标由内置 imagegen 生成，附 PNG 原图和多尺寸 ICO。
+
+Icon sizing: `BuildIcon.py` (Python + Pillow) crops only transparent outer padding from the approved `AppIcon-source.png` and packs standard ICO sizes. The artwork is not regenerated. / 图标尺寸：`BuildIcon.py`（Python + Pillow）仅裁去已选原图外围透明边距，再封装为标准 ICO，不重新绘制图案。
