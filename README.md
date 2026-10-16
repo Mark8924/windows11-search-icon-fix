@@ -35,6 +35,12 @@ The helper does not patch system DLLs, inject code into Explorer, restart Explor
 - Run as the desktop user who will use the helper; it creates a limited-privilege logon task for that user. Organization policy may prevent task registration.
 - ARM64 is the original development environment. The AnyCPU source is intended to be portable, but x64, other builds, custom themes, replacement taskbars, high-contrast modes and multi-monitor behavior are not yet validated.
 
+### Download the compiled preview (no compilation)
+
+Open [Releases](https://github.com/Mark8924/windows11-search-icon-fix/releases) and download **SearchIconStateFix.exe**, then double-click it. The optional portable ZIP includes the same EXE, a `Stop.cmd` helper, bilingual instructions and the license. `SHA256SUMS.txt` lists the download hashes.
+
+The unsigned preview runs without a console or tray icon; check Task Manager for `SearchIconStateFix.exe`. Stop it with `SearchIconStateFix.exe --stop`, or double-click `Stop.cmd` from the ZIP. Portable use does not register a startup task. The system requirements and experimental status above still apply.
+
 ### Install from source
 
 Download the repository ZIP using **Code → Download ZIP**, extract it, and open Windows PowerShell in that folder. Review the source and scripts first. If Windows marks the downloaded ZIP as blocked, use its **Properties → Unblock** before extracting, where permitted by your organization's policy.
@@ -114,6 +120,12 @@ This stops the helper and removes its current-user logon task. Files and logs ar
 - Windows PowerShell **5.1**（`powershell.exe`）、系统 .NET Framework 和 ScheduledTasks 模块；构建时不要使用 PowerShell 7 的 `pwsh.exe`。
 - 用实际使用桌面的用户安装，任务以该用户的普通权限登录启动。组织策略可能限制任务创建。
 - 最初在 ARM64 环境开发。源码编译为 AnyCPU，但 x64、其他系统版本、自定义主题、替代任务栏、高对比度及多显示器场景仍未验证。
+
+### 下载已编译预览版（无需编译）
+
+打开 [Releases](https://github.com/Mark8924/windows11-search-icon-fix/releases)，下载 **SearchIconStateFix.exe**，双击即可运行。也可下载便携 ZIP，里面包含同一个 EXE、停止程序用的 `Stop.cmd`、双语说明和许可证。`SHA256SUMS.txt` 提供下载文件的校验值。
+
+预览程序未签名，没有控制台或托盘图标，可在任务管理器查看 `SearchIconStateFix.exe`。执行 `SearchIconStateFix.exe --stop` 或双击 ZIP 内的 `Stop.cmd` 停止。便携运行不会创建自启任务，前述系统要求和实验性状态仍适用。
 
 ### 从源码安装
 

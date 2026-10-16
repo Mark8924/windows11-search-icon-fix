@@ -1,6 +1,9 @@
 [CmdletBinding()]
-param([string]$OutputPath = (Join-Path $PSScriptRoot 'build\SearchIconStateFix.exe'))
+param([string]$OutputPath)
 $ErrorActionPreference = 'Stop'
+$sourceRoot = $PSScriptRoot
+if (-not $sourceRoot) { $sourceRoot = Split-Path -Parent $MyInvocation.MyCommand.Path }
+if (-not $OutputPath) { $OutputPath = Join-Path $sourceRoot 'build\SearchIconStateFix.exe' }
 if ($PSVersionTable.PSEdition -ne 'Desktop' -or $PSVersionTable.PSVersion.Major -lt 5) {
     throw 'Use Windows PowerShell 5.1 (powershell.exe), not PowerShell 7 (pwsh.exe).'
 }
@@ -14,5 +17,5 @@ $refs = @('System.dll','System.Core.dll',
     [Windows.Automation.AutomationElement].Assembly.Location,
     [Windows.Automation.TogglePatternIdentifiers].Assembly.Location)
 if (Test-Path -LiteralPath $OutputPath) { Remove-Item -LiteralPath $OutputPath }
-Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $PSScriptRoot 'SearchIconStateFix.cs'))) -Language CSharp -ReferencedAssemblies $refs -OutputAssembly $OutputPath -OutputType WindowsApplication
+Add-Type -TypeDefinition ([IO.File]::ReadAllText((Join-Path $sourceRoot 'SearchIconStateFix.cs'))) -Language CSharp -ReferencedAssemblies $refs -OutputAssembly $OutputPath -OutputType WindowsApplication
 Get-FileHash -LiteralPath $OutputPath -Algorithm SHA256
