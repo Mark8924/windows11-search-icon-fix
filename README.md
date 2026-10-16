@@ -1,16 +1,16 @@
 # Windows 11 Search Icon State Fix
 
-**Experimental preview — settings window, startup switch, and animation-only repair.**
+**Experimental preview — settings window, startup switch, invisible background mode, custom icon, and animation-only repair.**
 
 ## Download and run
 
-### [Download SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.0-preview.1/SearchIconStateFix.exe)
+### [Download SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.1-preview.1/SearchIconStateFix.exe)
 
-[Release details and checksums](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.0-preview.1) · Windows 11 ARM64 / x64 · No commands or administrator rights required.
+[Release details and checksums](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.1-preview.1) · Windows 11 ARM64 / x64 · No commands or administrator rights required.
 
 1. Run the EXE. It installs a current-user copy and opens the settings window.
-2. Check **Start automatically when I sign in** if desired. Startup runs quietly in the tray.
-3. **Hide to tray** keeps monitoring. **Exit**, or closing the window, stops monitoring. Double-click the tray icon to reopen settings.
+2. Check **Start automatically when I sign in** if desired. Startup runs invisibly in the background, with no taskbar or notification-area icon.
+3. **Hide** keeps monitoring invisibly, with no taskbar or notification-area icon. **Exit**, or closing the window, stops monitoring. Run the EXE or desktop shortcut again to reopen settings without starting another instance.
 
 The UI follows the Windows display language (English / Chinese). Files and logs are stored in `%LOCALAPPDATA%\SearchIconStateFix`. Startup uses your current user's Run entry; the EXE can be moved out of Downloads after its first launch. It does not change execution policy or need a PowerShell startup script.
 
@@ -52,17 +52,17 @@ MIT license. Bug reports should include Windows build, CPU architecture, Search 
 
 # Windows 11 搜索图标状态修复
 
-**实验性预览版：新增设置界面、自启开关和仅修复图标动画的方案。**
+**实验性预览版：新增设置界面、自启开关、纯后台隐藏、独立图标和仅修复图标动画的方案。**
 
 ## 下载和使用
 
-### [直接下载 SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.0-preview.1/SearchIconStateFix.exe)
+### [直接下载 SearchIconStateFix.exe](https://github.com/Mark8924/windows11-search-icon-fix/releases/download/v0.2.1-preview.1/SearchIconStateFix.exe)
 
-[版本说明与校验值](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.0-preview.1) · 支持 Windows 11 ARM64 / x64 · 无需输入命令或管理员权限。
+[版本说明与校验值](https://github.com/Mark8924/windows11-search-icon-fix/releases/tag/v0.2.1-preview.1) · 支持 Windows 11 ARM64 / x64 · 无需输入命令或管理员权限。
 
 1. 双击 EXE，会安装到当前用户目录并打开设置界面。
-2. 按需勾选“登录 Windows 时自动启动”；自启时只在托盘运行，不弹窗口。
-3. “隐藏到托盘”继续运行；“退出”或关闭窗口会停止运行。双击托盘图标可再次打开界面。
+2. 按需勾选“登录 Windows 时自动启动”；自启时纯后台运行，不显示窗口、任务栏或托盘图标。
+3. “隐藏”会纯后台运行，不显示任务栏或托盘图标；“退出”或关闭窗口会停止运行。再次双击 EXE 或桌面入口可重新打开设置，不会重复启动。
 
 界面随 Windows 显示语言选择中英文。程序和日志保存在 `%LOCALAPPDATA%\SearchIconStateFix`；自启使用当前用户的 Run 项，不更改 PowerShell 执行策略，也不需要启动脚本。
 
@@ -75,3 +75,5 @@ MIT license. Bug reports should include Windows build, CPU architecture, Search 
 已在 Windows 11 25H2 ARM64（26200.8037）完成受控的图标恢复、界面和自启设置验证；**实际偶发问题是否长期不再出现，仍待验证**。x64 已编译，尚无实机验证。依赖 Windows 的搜索界面实现，不保证所有版本、主题和搜索模式有效；无法确认时跳过，不进行打断用户的后备操作。
 
 这是未签名的开源程序。可先检查源码与校验值。编译方式见上方英文部分；`Uninstall.ps1` 用于退出并删除自启项，保留日志与缓存，注销后可删除缓存目录。MIT 许可证。
+
+Icon generated using the built-in imagegen tool; source PNG and multi-size ICO are included. / 图标由内置 imagegen 生成，附 PNG 原图和多尺寸 ICO。

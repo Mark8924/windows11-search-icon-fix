@@ -1,0 +1,8 @@
+Generated and edited using the built-in imagegen tool.
+Reference: Microsoft PowerToys utility icon gallery, for style only, not copied.
+https://learn.microsoft.com/en-us/windows/powertoys/
+
+Final edits:
+修改这枚图标，保留现有放大镜与右下角扳手的构图和蓝色、灰白配色，把整个图标改成真正的二维扁平矢量风格。放大镜的圆环、镜片、手柄以及扳手分别使用均匀纯色填充。去掉所有渐变、玻璃反光、亮斑、金属质感、倒角、侧面厚度、立体挤出、阴影和光晕。边缘清晰，几何轮廓简洁。背景透明。
+
+只调整扳手：把右下角的扳手缩小到现在的约六成，仍放在放大镜右下角，作为一个小的辅助符号。放大镜保持原样和原尺寸，蓝色与灰白的扁平配色保持不变。扳手轮廓清晰简洁，透明背景和图形内部镂空干净完整，边缘不要残留白色杂点。

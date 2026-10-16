@@ -135,7 +135,6 @@ internal static class SearchIconStateFix
         string reason = "startup";
         volatile bool stopping;
         bool? previouslyVisible;
-        readonly NotifyIcon tray;
         SettingsForm form;
         internal FixContext(bool background) {
             // UI Automation belongs on an MTA worker, never the STA window-message thread.
@@ -148,12 +147,7 @@ internal static class SearchIconStateFix
             callback = OnWinEvent;
             foregroundHook = Native.SetWinEventHook(3, 3, IntPtr.Zero, callback, 0, 0, 2);
             visibilityHook = Native.SetWinEventHook(0x8002, 0x8003, IntPtr.Zero, callback, 0, 0, 2);
-            Log("started pid=" + Process.GetCurrentProcess().Id + " version=0.2.0-preview.1; event-driven, no periodic polling");
-            var menu = new ContextMenuStrip();
-            menu.Items.Add(L("Open", "打开主界面"), null, delegate { ShowUI(); });
-            menu.Items.Add(L("Exit", "退出"), null, delegate { Stop(); });
-            tray = new NotifyIcon { Icon = SystemIcons.Application, Text = Caption, ContextMenuStrip = menu, Visible = true };
-            tray.DoubleClick += delegate { ShowUI(); };
+            Log("started pid=" + Process.GetCurrentProcess().Id + " version=0.2.1-preview.1; event-driven, no periodic polling");
             if (!background) ShowUI();
             Schedule("startup", 1500);
         }
@@ -304,7 +298,6 @@ internal static class SearchIconStateFix
                 uint pid; Native.GetWindowThreadProcessId(h, out pid);
                 if (pid == explorerPid) { IntPtr result; Native.SendMessageTimeout(h, detach, IntPtr.Zero, IntPtr.Zero, 2, 1000, out result); }
             }
-            tray.Visible = false; tray.ContextMenuStrip.Dispose(); tray.Dispose();
             if (form != null) { form.AllowClose = true; form.Dispose(); }
             window.Dispose(); timer.Dispose(); Log("stopped"); base.ExitThreadCore();
         }
@@ -313,7 +306,7 @@ internal static class SearchIconStateFix
         readonly FixContext owner; readonly CheckBox startup; bool refreshing;
         internal bool AllowClose;
         internal SettingsForm(FixContext owner) {
-            this.owner = owner; Text = Caption; StartPosition = FormStartPosition.CenterScreen;
+            this.owner = owner; Text = Caption; Icon = Icon.ExtractAssociatedIcon(InstalledExe); StartPosition = FormStartPosition.CenterScreen;
             Font = new Font("Segoe UI", 10); AutoScaleMode = AutoScaleMode.None;
             float dpi; using (var graphics = CreateGraphics()) dpi = graphics.DpiX / 96f;
             Func<int, int> px = delegate(int value) { return (int)Math.Round(value * dpi); };
@@ -333,11 +326,11 @@ internal static class SearchIconStateFix
                 catch (Exception ex) { MessageBox.Show(this, ex.Message, L("Startup setting failed", "自启设置失败"), MessageBoxButtons.OK, MessageBoxIcon.Error); RefreshStartup(); }
             };
             layout.Controls.Add(startup, 0, 3);
-            var note = new Label { Text = L("Hide keeps monitoring in the tray. Closing this window exits. Startup launches quietly.", "隐藏后仍在托盘运行；关闭窗口即退出。\n开机自启不会弹出主界面。"), ForeColor = SystemColors.GrayText, Dock = DockStyle.Fill };
+            var note = new Label { Text = L("Hide runs invisibly in the background. Open the desktop shortcut to show settings again. Closing this window exits.", "隐藏后在后台运行，不显示任务栏或托盘图标。\n再次双击桌面入口可打开；关闭窗口即退出。"), ForeColor = SystemColors.GrayText, Dock = DockStyle.Fill };
             layout.Controls.Add(note, 0, 4);
             var buttons = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft, WrapContents = false };
             var exit = new Button { Text = L("Exit", "退出"), AutoSize = true, Height = px(32), AccessibleName = "Exit" }; exit.Click += delegate { owner.Stop(); };
-            var hide = new Button { Text = L("Hide to tray", "隐藏到托盘"), AutoSize = true, Height = px(32), AccessibleName = "Hide to tray" }; hide.Click += delegate { Hide(); };
+            var hide = new Button { Text = L("Hide", "隐藏"), AutoSize = true, Height = px(32), AccessibleName = "Hide" }; hide.Click += delegate { Hide(); };
             var logs = new Button { Text = L("Logs", "日志"), AutoSize = true, Height = px(32), AccessibleName = "Logs" }; logs.Click += delegate { Process.Start(new ProcessStartInfo(Dir) { UseShellExecute = true }); };
             buttons.Controls.Add(exit); buttons.Controls.Add(hide); buttons.Controls.Add(logs); layout.Controls.Add(buttons, 0, 5);
             Controls.Add(layout);
