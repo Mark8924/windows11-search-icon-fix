@@ -131,7 +131,7 @@ internal static class SearchIconStateFix
         readonly HashSet<IntPtr> searchWindows = new HashSet<IntPtr>();
         DateTime staleSince = DateTime.MinValue, lastRepair = DateTime.MinValue;
         int repairStage;
-        DateTime lastAttach = DateTime.MinValue;
+        DateTime lastAttach = DateTime.MinValue, lastRebuild = DateTime.MinValue;
         string reason = "startup";
         volatile bool stopping;
         bool? previouslyVisible;
@@ -147,7 +147,7 @@ internal static class SearchIconStateFix
             callback = OnWinEvent;
             foregroundHook = Native.SetWinEventHook(3, 3, IntPtr.Zero, callback, 0, 0, 2);
             visibilityHook = Native.SetWinEventHook(0x8002, 0x8003, IntPtr.Zero, callback, 0, 0, 2);
-            Log("started pid=" + Process.GetCurrentProcess().Id + " version=0.2.2-preview.1; event-driven, no periodic polling");
+            Log("started pid=" + Process.GetCurrentProcess().Id + " version=0.3.0-preview.1; event-driven, no periodic polling");
             if (!background) ShowUI();
             Schedule("startup", 1500);
         }
@@ -247,13 +247,23 @@ internal static class SearchIconStateFix
                     int applied = RestoreAnimationFrame();
                     Log("animation bridge applied=" + applied + "; no Search toggle or input/focus operation");
                     repairStage = 1; Schedule("verify-animation-restore", 700);
+                } else if (repairStage == 1) {
+                    if ((DateTime.UtcNow - lastRebuild).TotalSeconds < 60) {
+                        Log("icon visual rebuild rate limited; leaving Search untouched");
+                        repairStage = 0; staleSince = DateTime.MinValue; return;
+                    }
+                    if (SearchVisible()) { repairStage = 0; staleSince = DateTime.MinValue; return; }
+                    lastRebuild = DateTime.UtcNow;
+                    int rebuilt = RestoreAnimationFrame(true);
+                    Log("idle progress did not fix visible icon; rebuilt animation visual=" + rebuilt + "; no Search toggle/input/focus operation");
+                    repairStage = 2; Schedule("verify-visual-rebuild", 900);
                 } else {
-                    Log("warning: icon remains colored after animation restore; no panel/settings fallback");
+                    Log("warning: icon remains colored after visual rebuild; no panel/settings fallback");
                     repairStage = 0; staleSince = DateTime.MinValue;
                 }
             } catch (Exception ex) { Log("check skipped: " + ex.ToString()); staleSince = DateTime.MinValue; repairStage = 0; }
         }
-        const string BridgeClass = "SearchIconStateFix.AnimationBridge.v3";
+        const string BridgeClass = "SearchIconStateFix.AnimationBridge.v4";
         bool BridgePresent() {
             IntPtr h = IntPtr.Zero;
             while ((h = Native.FindWindowEx(new IntPtr(-3), h, BridgeClass, null)) != IntPtr.Zero) {
@@ -276,14 +286,14 @@ internal static class SearchIconStateFix
             }
             return true;
         }
-        int RestoreAnimationFrame() {
+        int RestoreAnimationFrame(bool rebuild = false) {
             int applied = 0; IntPtr h = IntPtr.Zero;
-            uint message = Native.RegisterWindowMessage("SearchIconStateFix.RestoreIdleAnimation.v3");
+            uint message = Native.RegisterWindowMessage("SearchIconStateFix.RestoreIdleAnimation.v4");
             while ((h = Native.FindWindowEx(new IntPtr(-3), h, BridgeClass, null)) != IntPtr.Zero) {
                 uint pid; Native.GetWindowThreadProcessId(h, out pid);
                 if (pid != explorerPid) continue;
                 IntPtr result;
-                if (Native.SendMessageTimeout(h, message, IntPtr.Zero, IntPtr.Zero, 2, 1000, out result) != IntPtr.Zero && result.ToInt64() == 1) applied++;
+                if (Native.SendMessageTimeout(h, message, rebuild ? new IntPtr(1) : IntPtr.Zero, IntPtr.Zero, 2, 1000, out result) != IntPtr.Zero && result.ToInt64() == 1) applied++;
             }
             return applied;
         }
@@ -293,7 +303,7 @@ internal static class SearchIconStateFix
             if (foregroundHook != IntPtr.Zero) Native.UnhookWinEvent(foregroundHook);
             if (visibilityHook != IntPtr.Zero) Native.UnhookWinEvent(visibilityHook);
             // Detach the event observer as well; no icon correction continues after Exit.
-            IntPtr h = IntPtr.Zero; uint detach = Native.RegisterWindowMessage("SearchIconStateFix.DetachAnimationBridge.v3");
+            IntPtr h = IntPtr.Zero; uint detach = Native.RegisterWindowMessage("SearchIconStateFix.DetachAnimationBridge.v4");
             while ((h = Native.FindWindowEx(new IntPtr(-3), h, BridgeClass, null)) != IntPtr.Zero) {
                 uint pid; Native.GetWindowThreadProcessId(h, out pid);
                 if (pid == explorerPid) { IntPtr result; Native.SendMessageTimeout(h, detach, IntPtr.Zero, IntPtr.Zero, 2, 1000, out result); }

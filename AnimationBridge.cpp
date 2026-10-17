@@ -18,18 +18,18 @@
 #include <vector>
 #include <condition_variable>
 
-static const CLSID CLSID_Bridge = {0x8a92c072,0x259e,0x42d8,{0xb4,0x6a,0x3b,0xfa,0xa1,0xb0,0x0f,0x38}};
+static const CLSID CLSID_Bridge = {0x72c04e63,0x111f,0x4963,{0xb4,0x6a,0x3b,0xfa,0xa1,0xb0,0x0f,0x38}};
 static const IID IID_Player = {0xbf7f8865,0x7b79,0x5354,{0x97,0x88,0xc2,0x1e,0x52,0x35,0x91,0xea}};
 static const IID IID_Source2 = {0x1a3b53a7,0xa8fe,0x59a1,{0xb5,0x44,0x43,0xa4,0xd9,0xc8,0x1e,0xf2}};
 #ifdef BRIDGE_TEST
-static const wchar_t* BridgeClass=L"SearchIconStateFix.AnimationBridge.v3-test";
+static const wchar_t* BridgeClass=L"SearchIconStateFix.AnimationBridge.v4-test";
 #else
-static const wchar_t* BridgeClass=L"SearchIconStateFix.AnimationBridge.v3";
+static const wchar_t* BridgeClass=L"SearchIconStateFix.AnimationBridge.v4";
 #endif
-static UINT RestoreMessage(){static UINT m=RegisterWindowMessageW(L"SearchIconStateFix.RestoreIdleAnimation.v3");return m;}
-static UINT TestMessage(){static UINT m=RegisterWindowMessageW(L"SearchIconStateFix.TestAnimationFrame.v3");return m;}
+static UINT RestoreMessage(){static UINT m=RegisterWindowMessageW(L"SearchIconStateFix.RestoreIdleAnimation.v4");return m;}
+static UINT TestMessage(){static UINT m=RegisterWindowMessageW(L"SearchIconStateFix.TestAnimationFrame.v4");return m;}
 static void RequestDetach();
-static UINT DetachMessage(){static UINT m=RegisterWindowMessageW(L"SearchIconStateFix.DetachAnimationBridge.v3");return m;}
+static UINT DetachMessage(){static UINT m=RegisterWindowMessageW(L"SearchIconStateFix.DetachAnimationBridge.v4");return m;}
 static std::mutex logMutex;
 static void Log(const wchar_t* format, ...) {
     std::lock_guard<std::mutex> lock(logMutex);
@@ -74,7 +74,7 @@ struct Target {
     IXamlDiagnostics* diag;IVisualTreeService* service;InstanceHandle button,icon;
     Target(IXamlDiagnostics* d,IVisualTreeService* s,InstanceHandle b,InstanceHandle i):diag(d),service(s),button(b),icon(i){diag->AddRef();service->AddRef();}
     ~Target(){diag->Release();service->Release();}
-    LRESULT Apply(bool simulate){
+    LRESULT Apply(bool simulate,bool rebuild=false){
         if(CheckedState(service,button)!=0){Log(L"Animation restore skipped: Search is active or state unknown");return 0;}
         IInspectable* element=nullptr;IUnknown* player=nullptr;
         HRESULT hr=diag->GetIInspectableFromHandle(icon,&element);
@@ -82,9 +82,24 @@ struct Target {
         if(element)element->Release();if(FAILED(hr)||!player)return -1;
         double progress=-1;
         hr=GetMarker(player,simulate?L"NormalOffToNormalOn_End":L"NormalOnToNormalOff_End",&progress);
-        if(SUCCEEDED(hr)&&progress>=0&&progress<=1 && CheckedState(service,button)==0)
-            hr=Slot<HRESULT(STDMETHODCALLTYPE*)(IUnknown*,double)>(player,24)(player,progress);
-        else if(SUCCEEDED(hr))hr=E_ABORT;
+        if(SUCCEEDED(hr)&&progress>=0&&progress<=1 && CheckedState(service,button)==0){
+            if(rebuild){
+                IInspectable* source=nullptr;
+                hr=Slot<HRESULT(STDMETHODCALLTYPE*)(IUnknown*,IInspectable**)>(player,8)(player,&source);
+                if(SUCCEEDED(hr)&&source && ClassName(source).find(L"AnimatedVisuals.Search")==0 && CheckedState(service,button)==0){
+                    HRESULT cleared=Slot<HRESULT(STDMETHODCALLTYPE*)(IUnknown*,IInspectable*)>(player,9)(player,nullptr);
+                    // Always restore the same object, even if clearing reported a failure.
+                    HRESULT restored=Slot<HRESULT(STDMETHODCALLTYPE*)(IUnknown*,IInspectable*)>(player,9)(player,source);
+                    if(FAILED(restored))restored=Slot<HRESULT(STDMETHODCALLTYPE*)(IUnknown*,IInspectable*)>(player,9)(player,source);
+                    hr=FAILED(restored)?restored:cleared;
+                    Log(L"Rebuilt icon visual from unchanged source clear=%08lx restore=%08lx",cleared,restored);
+                }else if(SUCCEEDED(hr))hr=E_ABORT;
+                if(source)source->Release();
+            }
+            if(SUCCEEDED(hr)&&CheckedState(service,button)==0)
+                hr=Slot<HRESULT(STDMETHODCALLTYPE*)(IUnknown*,double)>(player,24)(player,progress);
+            else if(SUCCEEDED(hr))hr=E_ABORT;
+        }else if(SUCCEEDED(hr))hr=E_ABORT;
         player->Release();Log(L"%s progress=%.9f hr=%08lx; no panel/input/focus operation",simulate?L"Simulated stale frame":L"Restored idle frame",progress,hr);
         return SUCCEEDED(hr)?1:-1;
     }
@@ -94,7 +109,7 @@ static LRESULT CALLBACK BridgeProc(HWND h,UINT message,WPARAM w,LPARAM l){
     auto target=reinterpret_cast<Target*>(GetWindowLongPtrW(h,GWLP_USERDATA));
     if(message==WM_NCCREATE){auto creation=static_cast<Creation*>(reinterpret_cast<CREATESTRUCTW*>(l)->lpCreateParams);target=creation->target;creation->adopted=true;SetWindowLongPtrW(h,GWLP_USERDATA,(LONG_PTR)target);}
     if(message==DetachMessage()){RequestDetach();return 1;}
-    if(target && message==RestoreMessage())return target->Apply(false);
+    if(target && message==RestoreMessage())return target->Apply(false,w==1);
 #ifdef BRIDGE_TEST
     if(target && message==TestMessage())return target->Apply(true);
 #endif
